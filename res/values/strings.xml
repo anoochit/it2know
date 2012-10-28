@@ -1,0 +1,16 @@
+<resources>
+
+    <string name="app_name">it2know</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">เกี่ยวกับ</string>
+    <string name="title_activity_main">น่ารู้เรื่องไอที</string>
+    <string name="playlist_url">http://thaiopensource.org/sites/default/include/playlist.xspf</string>
+    <string name="text_update">อัพเดทข้อมูล</string>
+    <string name="text_update_espisode">ไม่พบรายการข้อมูล อัพเดทข้อมูลผ่านอินเตอร์เน็ต</string>
+    <string name="button_yes">ใช่</string>
+    <string name="title_activity_update_episode">อัพเดทข้อมูล</string>
+    <string name="title_select_episode">เลือก</string>
+    <string name="text_episode">น่ารู้เรื่องไอที ชุดที่</string><string name="media_url">http://pub.thaiopensource.org/radio/</string>
+    
+
+</resources>
