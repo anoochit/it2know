@@ -20,14 +20,12 @@
         android:layout_alignLeft="@+id/episodSpinner"
         android:layout_alignParentBottom="true"
         android:layout_below="@id/episodSpinner"
+        android:layout_marginBottom="40dp"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"
-        android:paddingBottom="50dp"
         android:paddingTop="2dp" >
 
     </ListView>
-
-    
 
     <LinearLayout
         android:id="@+id/mainLayout"

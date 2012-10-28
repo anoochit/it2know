@@ -62,7 +62,7 @@ public class MainActivity extends Activity implements
 		
 		// load admob
 		// Create the adView
-		adView = new AdView(this, AdSize.BANNER, "a1508d5ee9096b5");
+		adView = new AdView(this, AdSize.BANNER, "a1508d7e3b1c61b");
 		// Lookup your LinearLayout assuming it’s been given
 		// the attribute android:id="@+id/mainLayout"
 		LinearLayout layout = (LinearLayout) findViewById(R.id.mainLayout);
@@ -87,8 +87,6 @@ public class MainActivity extends Activity implements
 			spin.setAdapter(adapter);
 		}
 	}
-
-
 
 	private void checkEpisodeExist() {
 		final DatabaseHandler myDb = new DatabaseHandler(this);
@@ -202,7 +200,6 @@ public class MainActivity extends Activity implements
 
 				String strLocation = myData.getString(myData.getColumnIndex("location"));
 				Log.d("DB", "Select " + getString(R.string.media_url)+ strLocation);
-
 				// initial media
 				Uri uri = Uri.parse(getString(R.string.media_url)+ strLocation);
 				Intent intent = new Intent(Intent.ACTION_VIEW, uri);
