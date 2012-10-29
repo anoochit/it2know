@@ -1,7 +1,16 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/menu_settings"
-        android:title="@string/menu_settings"
+    <item android:id="@+id/menu_update" android:title="@string/text_update"></item><item android:id="@+id/menu_share"
+        android:title="@string/menu_share"
         android:orderInCategory="100"
         android:showAsAction="never" />
+    <item android:id="@+id/menu_fanpage"
+        android:title="@string/menu_fanpage"
+        android:orderInCategory="100"
+        android:showAsAction="never" />
+     <item android:id="@+id/menu_about"
+        android:title="@string/menu_about"
+        android:orderInCategory="100"
+        android:showAsAction="never" />
+     
  
 </menu>

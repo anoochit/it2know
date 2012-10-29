@@ -4,27 +4,26 @@ import java.io.File;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
  
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import com.google.ads.*;
 
-import com.google.ads.AdRequest;
-import com.google.ads.AdSize;
-import com.google.ads.AdView;
-
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.LinearLayout;
@@ -48,18 +47,8 @@ public class MainActivity extends Activity implements
 		setContentView(R.layout.activity_main);
 
 		Log.d("ACTIVITY","load main activity");
-		
-		// initial database handler
-		final DatabaseHandler myDb = new DatabaseHandler(this);
-		
-		// read database
-		myDb.getWritableDatabase();
-		
-		// check espidose exist and update from internet
-		checkEpisodeExist();		
-		
-		loadContent();
-		
+
+
 		// load admob
 		// Create the adView
 		adView = new AdView(this, AdSize.BANNER, "a1508d7e3b1c61b");
@@ -69,8 +58,15 @@ public class MainActivity extends Activity implements
 		// Add the adView to it
 		layout.addView(adView);
 		// Initiate a generic request to load it with an ad
-		adView.loadAd(new AdRequest());
- 		 
+		adView.loadAd(new AdRequest());		
+		// initial database handler
+		final DatabaseHandler myDb = new DatabaseHandler(this);		
+		// read database
+		myDb.getWritableDatabase();		
+		// check espidose exist and update from internet
+		checkEpisodeExist();		
+		// load content
+		loadContent();
 		
 	}
 	
@@ -82,8 +78,7 @@ public class MainActivity extends Activity implements
 			final String[] episodeItem = myDb.SelectAllEpisode();
 			Spinner spin = (Spinner) findViewById(R.id.episodSpinner);
 			spin.setOnItemSelectedListener(this);
-			ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-					android.R.layout.simple_spinner_dropdown_item, episodeItem);
+			ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_dropdown_item, episodeItem);
 			spin.setAdapter(adapter);
 		}
 	}
@@ -106,66 +101,70 @@ public class MainActivity extends Activity implements
 									MainActivity.this,
 									UpdateEpisodeActivity.class);
 							startActivity(updateEpisodeActivity);
-
-							// parse XML to database
-							try {
-								File fXmlFile = new File(Environment.getExternalStorageDirectory().getPath() + "/playlist.xspf");
-								DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-								DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-								Document doc = dBuilder.parse(fXmlFile);
-								doc.getDocumentElement().normalize();
-
-								Log.d("XML", doc.getDocumentElement().getNodeName());
-								NodeList nList = doc.getElementsByTagName("track");
-
-								Log.d("XML", String.valueOf(nList.getLength()));
-
-								Integer epidId = 0;
-
-								mProgressDialog = ProgressDialog.show(MainActivity.this, "",getString(R.string.text_update));
-
-								for (int temp = 0; temp < nList.getLength(); temp++) {
-									Node nNode = nList.item(temp);
-									if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-
-										Element eElement = (Element) nNode;
-										Log.d("XML",getTagValue("title", eElement));
-										Log.d("XML",getTagValue("location",eElement));
-										String strLocation = getTagValue("location", eElement);
-										String[] strEpisodeID = strLocation.split("/");
-										Integer itemId = Integer.parseInt(strEpisodeID[0]);
-										String itemTitle = getTagValue("title",eElement);
-
-										if (itemId >= epidId) {
-											epidId++;
-											myDb.InsertEpisodeItem(epidId,getString(R.string.text_episode) + " " + epidId);
-										}
-										myDb.InsertItem((temp + 1), epidId,itemTitle, strLocation);
-									}
-
-								}
-
-								mProgressDialog.dismiss();
-								loadContent();
-
-							} catch (Exception e) {
-								e.printStackTrace();
-								Log.d("XML", "Error Parsing");
-							}
-
+							parseContent();
 						}
-
-						private String getTagValue(String sTag, Element eElement) {
-							NodeList nlList = eElement.getElementsByTagName(sTag).item(0).getChildNodes();
-							Node nValue = (Node) nlList.item(0);
-							return nValue.getNodeValue().trim();
-						}
-
 					});
-			dDialog.show();			
+			dDialog.show();
 		}
+
+	}
+	
+	private void parseContent(){
+		final DatabaseHandler myDb = new DatabaseHandler(this);
+		try {
+			File fXmlFile = new File(Environment.getExternalStorageDirectory().getPath() + "/playlist.xspf");
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dBuilder.parse(fXmlFile);
+			doc.getDocumentElement().normalize();
+
+			Log.d("XML", doc.getDocumentElement().getNodeName());
+			NodeList nList = doc.getElementsByTagName("track");
+
+			Log.d("XML", String.valueOf(nList.getLength()));
+
+			Integer epidId = 0;
+			 
+			mProgressDialog = ProgressDialog.show(MainActivity.this, "","");
+			for (int temp = 0; temp < nList.getLength(); temp++) {
+				Node nNode = nList.item(temp);
+				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+
+					Element eElement = (Element) nNode;
+					Log.d("XML",getTagValue("title", eElement));
+					Log.d("XML",getTagValue("location",eElement));
+					String strLocation = getTagValue("location", eElement);
+					String[] strEpisodeID = strLocation.split("/");
+					Integer itemId = Integer.parseInt(strEpisodeID[0]);
+					String itemTitle = getTagValue("title",eElement);
+ 					if (itemId >= epidId) {
+						epidId++;
+						if (myDb.isEpisodeExist(epidId)<=0) {
+							myDb.InsertEpisodeItem(epidId,getString(R.string.text_episode) + " " + epidId);
+							Log.d("DB", "add episode");
+						}
+					}
+ 					if (myDb.isItemExist((temp + 1))<=0) {
+ 						myDb.InsertItem((temp + 1), epidId,itemTitle, strLocation);
+ 						Log.d("DB", "add item");
+ 					}
+				}
+
+			}			
+			loadContent();
+			mProgressDialog.cancel();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			Log.d("XML", "Error Parsing");
+		} 
 		
-		
+	}
+	  
+	private String getTagValue(String sTag, Element eElement) {
+		NodeList nlList = eElement.getElementsByTagName(sTag).item(0).getChildNodes();
+		Node nValue = (Node) nlList.item(0);
+		return nValue.getNodeValue().trim();
 	}
 
 	@Override
@@ -173,6 +172,72 @@ public class MainActivity extends Activity implements
 		getMenuInflater().inflate(R.menu.activity_main, menu);
 		return true;
 	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// TODO Auto-generated method stub
+		switch (item.getItemId()) {
+		case R.id.menu_share:
+			Log.d("MENU", "select menu share");
+			Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+			sharingIntent.setType("text/plain");
+			sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, getString(R.string.text_share_subject));
+			sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, getString(R.string.text_share_body));
+			startActivity(Intent.createChooser(sharingIntent, getString(R.string.menu_share)));
+			break;
+		case R.id.menu_update:
+			Log.d("MENU", "select menu update");
+			// ask for update			
+			final AlertDialog.Builder adb = new AlertDialog.Builder(this);
+			adb.setTitle(R.string.text_update);
+			adb.setMessage(R.string.text_asking_for_update);
+			adb.setPositiveButton(R.string.button_yes,
+					new AlertDialog.OnClickListener() {
+						public void onClick(DialogInterface dialog,	int arg1) {
+							// check network connection
+							if (checkNetworkStatus()){
+								Log.d("Network", "Has network connection");
+								// clean table initial new update
+								DatabaseHandler myDb = new DatabaseHandler(MainActivity.this);
+								myDb.deleteTableData();
+								// intent update database
+								Log.d("DB", "update episode data from internet");
+								// load episode data and items form internet
+								Intent updateEpisodeActivity = new Intent(MainActivity.this,UpdateEpisodeActivity.class);
+								startActivity(updateEpisodeActivity);
+								parseContent();
+								loadContent();
+								
+							} else {
+								final AlertDialog.Builder alertAdb = new AlertDialog.Builder(MainActivity.this);
+								alertAdb.setTitle(R.string.text_update);
+								alertAdb.setMessage(R.string.text_no_network);
+								alertAdb.setNegativeButton(R.string.button_yes,null);
+								alertAdb.show();
+								Log.d("Network", "No network connection");
+							}
+						}
+					});
+			adb.setNegativeButton(R.string.button_no,null);
+			adb.show();		
+			break;		
+		case R.id.menu_fanpage:
+			Log.d("MENU", "select menu fanpage");
+			// intent to facebook fanpage
+			Intent fanPageIntent = new Intent(Intent.ACTION_VIEW);
+			fanPageIntent.setData(Uri.parse("https://www.facebook.com/pages/ITGoodToKnow/248162135309558"));
+			startActivity(fanPageIntent);
+			break;		
+		case R.id.menu_about:
+			Log.d("MENU", "select menu about");
+			//intent to about page
+			Intent aboutIntent = new Intent(MainActivity.this,AboutActivity.class);
+			startActivity(aboutIntent);
+			break;		 
+		}
+		return false;
+	}
+	
 
 	@SuppressWarnings("deprecation")
 	@Override
@@ -214,5 +279,22 @@ public class MainActivity extends Activity implements
 		// TODO Auto-generated method stub
 
 	}
+	
+	public boolean checkNetworkStatus() {
+		final ConnectivityManager connMgr = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+		final android.net.NetworkInfo wifi = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+		final android.net.NetworkInfo mobile = connMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+		if (wifi.isAvailable()) {
+			Log.d("Network", "Connect via Wifi");
+			return true;
+		} else if (mobile.isAvailable()) {
+			Log.d("Network", "Connect via Mobile network");
+			return true;
+		} else {
+			Log.d("Network", "No network connection");
+			return false;
+		}
+	}
+
 
 }

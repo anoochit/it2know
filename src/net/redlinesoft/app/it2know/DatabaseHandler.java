@@ -139,6 +139,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		}
 
 	}
+	
+	
 
 	public Integer getTotalRow() {
 		// TODO Auto-generated method stub
@@ -152,6 +154,52 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			return count;
 		} catch (Exception e) {
 			return 0;
+		}
+	}
+	
+	public Integer isEpisodeExist(Integer epId) {
+		// TODO Auto-generated method stub
+		try {
+			SQLiteDatabase db;
+			db = this.getReadableDatabase(); // Read Data
+			Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM episode WHERE id="+epId,null);
+			cursor.moveToFirst();
+			int count = cursor.getInt(0);
+			cursor.close();
+			return count;
+		} catch (Exception e) {
+			return 0;
+		}
+	}
+	
+	public Integer isItemExist(Integer itemId) {
+		// TODO Auto-generated method stub
+		try {
+			SQLiteDatabase db;
+			db = this.getReadableDatabase(); // Read Data
+			Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM item WHERE id="+itemId,null);
+			cursor.moveToFirst();
+			int count = cursor.getInt(0);
+			cursor.close();
+			return count;
+		} catch (Exception e) {
+			return 0;
+		}
+	}
+
+	public void deleteTableData() {
+		// TODO Auto-generated method stub
+		try {
+			SQLiteDatabase db;
+			db = this.getWritableDatabase(); // Read Data
+			//Cursor cursor1 = db.rawQuery("DELETE FROM item WHERE id > -1 ", null);
+			//Cursor cursor2 = db.rawQuery("DELETE FROM episode WHERE id > -1", null);
+			db.delete("item", null, null);
+			db.delete("episode", null, null);
+			db.close();
+			Log.d("DB", "Delete table data");
+		} catch (Exception e) {
+			
 		}
 	}
 

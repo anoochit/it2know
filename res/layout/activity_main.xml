@@ -17,10 +17,9 @@
         android:id="@+id/listView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignLeft="@+id/episodSpinner"
         android:layout_alignParentBottom="true"
         android:layout_below="@id/episodSpinner"
-        android:layout_marginBottom="40dp"
+        android:layout_marginBottom="50dp"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"
         android:paddingTop="2dp" >
@@ -34,7 +33,6 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:orientation="vertical" >
- 
     </LinearLayout>
 
 </RelativeLayout>

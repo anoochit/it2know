@@ -2,15 +2,25 @@
 
     <string name="app_name">it2know</string>
     <string name="hello_world">Hello world!</string>
-    <string name="menu_settings">เกี่ยวกับ</string>
     <string name="title_activity_main">น่ารู้เรื่องไอที</string>
     <string name="playlist_url">http://thaiopensource.org/sites/default/include/playlist.xspf</string>
     <string name="text_update">อัพเดทข้อมูล</string>
     <string name="text_update_espisode">ไม่พบรายการข้อมูล อัพเดทข้อมูลผ่านอินเตอร์เน็ต</string>
-    <string name="button_yes">ใช่</string>
+    <string name="button_yes">ตกลง</string>
     <string name="title_activity_update_episode">อัพเดทข้อมูล</string>
     <string name="title_select_episode">เลือก</string>
-    <string name="text_episode">น่ารู้เรื่องไอที ชุดที่</string><string name="media_url">http://pub.thaiopensource.org/radio/</string>
-    
+    <string name="text_episode">น่ารู้เรื่องไอที ชุดที่</string>
+    <string name="media_url">http://pub.thaiopensource.org/radio/</string>
+    <string name="menu_fanpage">แฟนเพจ</string>
+    <string name="menu_share">แบ่งบัน</string>
+    <string name="menu_about">เกี่ยวกับ</string>
+    <string name="text_share_body">ติดตามรายการน่ารู้เรื่องไอทีผ่าน Android ได้ที่ http://tinyurl.com/it2know</string>
+    <string name="text_share_subject">ตามตามรายการน่ารู้เรื่องไอที</string>
+    <string name="title_activity_about">เกี่ยวกับ</string>
+    <string name="text_license">General Public License V.3.0</string>
+    <string name="text_copyright">Copyright (c) 2012 Redline Software</string>
+    <string name="button_no">ยกเลิก</string>
+    <string name="text_asking_for_update">คุณต้องการอัพเดทฐานข้อมูลรายการใหม่ กรุณาเชื่อมต่ออินเตอร์เน็ต</string>
+    <string name="text_no_network">กรุณาเชื่อมต่ออินเตอร์เน็ตเพื่ออัพเดทฐานข้อมูลรายการ</string>
 
 </resources>
