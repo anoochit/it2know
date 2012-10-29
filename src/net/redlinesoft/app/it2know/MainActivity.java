@@ -48,7 +48,6 @@ public class MainActivity extends Activity implements
 
 		Log.d("ACTIVITY","load main activity");
 
-
 		// load admob
 		// Create the adView
 		adView = new AdView(this, AdSize.BANNER, "a1508d7e3b1c61b");
