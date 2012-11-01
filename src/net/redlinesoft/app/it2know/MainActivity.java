@@ -73,11 +73,13 @@ public class MainActivity extends Activity implements
 		// initial database handler
 		final DatabaseHandler myDb = new DatabaseHandler(this);
 		// read database
-		myDb.getWritableDatabase();
+		//myDb.getWritableDatabase();
 		// check espidose exist and update from internet
 		checkEpisodeExist();
 		// load content
 		loadContent();
+		
+		myDb.close();
 
 	}
 
@@ -145,14 +147,15 @@ public class MainActivity extends Activity implements
 			mProgressDialog.setProgress(Integer.parseInt(progress[0]));
 		}
 
+	 
 		@SuppressWarnings("deprecation")
-		@Override
-		protected void onPostExecute(String unused) {
+		protected void onPostExecute(String unused) {			
 			dismissDialog(DIALOG_DOWNLOAD_PROGRESS);
+			removeDialog(DIALOG_DOWNLOAD_PROGRESS);
 		}
 
+	 
 		@SuppressWarnings("deprecation")
-		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
 			showDialog(DIALOG_DOWNLOAD_PROGRESS);
@@ -164,6 +167,7 @@ public class MainActivity extends Activity implements
 		final DatabaseHandler myDb = new DatabaseHandler(this);
 		// TODO Auto-generated method stub
 		try {
+		 
 			File fXmlFile = new File(Environment.getExternalStorageDirectory()
 					.getPath() + "/playlist.xspf");
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory
@@ -243,6 +247,7 @@ public class MainActivity extends Activity implements
 					android.R.layout.simple_spinner_dropdown_item, episodeItem);
 			spin.setAdapter(adapter);
 		}
+		myDb.close();
 	}
 
 	private void checkEpisodeExist() {
@@ -266,7 +271,7 @@ public class MainActivity extends Activity implements
 					});
 			dDialog.show();
 		}
-
+		myDb.close();
 	}
 
 	@Override
@@ -308,12 +313,13 @@ public class MainActivity extends Activity implements
 		case R.id.menu_update:
 			Log.d("MENU", "select menu update");
 			// ask for update
+			final DatabaseHandler myDb = new DatabaseHandler(this);
 			final AlertDialog.Builder adb = new AlertDialog.Builder(this);
 			adb.setTitle(R.string.text_update);
 			adb.setMessage(R.string.text_asking_for_update);
 			adb.setPositiveButton(R.string.button_yes,
 					new AlertDialog.OnClickListener() {
-						public void onClick(DialogInterface dialog, int arg1) {
+						public void onClick(DialogInterface dialog, int arg1) {							
 							// check network connection
 							if (checkNetworkStatus()) {
 								Log.d("Network", "Has network connection");
@@ -341,6 +347,7 @@ public class MainActivity extends Activity implements
 					});
 			adb.setNegativeButton(R.string.button_no, null);
 			adb.show();
+			myDb.close();
 			break;
 		case R.id.menu_fanpage:
 			Log.d("MENU", "select menu fanpage");
@@ -396,10 +403,10 @@ public class MainActivity extends Activity implements
 				Log.d("DB", "Select " + getString(R.string.media_url)
 						+ strLocation);
 				// initial media
-				Uri uri = Uri
-						.parse(getString(R.string.media_url) + strLocation);
+				Uri uri = Uri.parse(getString(R.string.media_url) + strLocation);
 				Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-				startActivity(intent);
+				intent.setDataAndType(uri, "audio/*");
+				startActivity(intent);			 
 			}
 		});
 
