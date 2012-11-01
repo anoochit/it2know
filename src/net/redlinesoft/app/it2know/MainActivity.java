@@ -19,6 +19,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import com.google.ads.*;
 
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -302,13 +304,13 @@ public class MainActivity extends Activity implements
 			Log.d("MENU", "select menu share");
 			Intent sharingIntent = new Intent(
 					android.content.Intent.ACTION_SEND);
-			sharingIntent.setType("text/plain");
+			sharingIntent.setType("text/*");
 			sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
 					getString(R.string.text_share_subject));
 			sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT,
 					getString(R.string.text_share_body));
-			startActivity(Intent.createChooser(sharingIntent,
-					getString(R.string.menu_share)));
+			//startActivity(Intent.createChooser(sharingIntent,getString(R.string.menu_share)));
+			startActivity(sharingIntent);
 			break;
 		case R.id.menu_update:
 			Log.d("MENU", "select menu update");
@@ -353,6 +355,7 @@ public class MainActivity extends Activity implements
 			Log.d("MENU", "select menu fanpage");
 			// intent to facebook fanpage
 			Intent fanPageIntent = new Intent(Intent.ACTION_VIEW);
+			fanPageIntent.setType("text/url");
 			fanPageIntent
 					.setData(Uri
 							.parse("https://www.facebook.com/pages/ITGoodToKnow/248162135309558"));
@@ -374,8 +377,7 @@ public class MainActivity extends Activity implements
 	public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2,
 			long arg3) {
 		// TODO Auto-generated method stub
-		mProgressDialog = ProgressDialog.show(MainActivity.this, "",
-				getString(R.string.text_update));
+		 
 		// load list item
 		final DatabaseHandler myDb = new DatabaseHandler(this);
 		final Cursor myData = myDb.SelectEpisode((arg2 + 1));
@@ -391,7 +393,6 @@ public class MainActivity extends Activity implements
 				R.layout.activity_column, myData, new String[] { "title", "id",
 						"location" }, new int[] { R.id.ColTitle });
 		lisView.setAdapter(adapter);
-		mProgressDialog.dismiss();
 
 		// OnClick Item
 		lisView.setOnItemClickListener(new OnItemClickListener() {
@@ -405,8 +406,9 @@ public class MainActivity extends Activity implements
 				// initial media
 				Uri uri = Uri.parse(getString(R.string.media_url) + strLocation);
 				Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-				intent.setDataAndType(uri, "audio/*");
-				startActivity(intent);			 
+				intent.setDataAndType(uri, "audio/mp3");
+				startActivity(intent);	
+			 
 			}
 		});
 
