@@ -23,6 +23,7 @@ import android.os.Environment;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.util.Log;
 import android.view.Menu;
 
@@ -38,12 +39,11 @@ public class UpdateEpisodeActivity extends Activity {
         setContentView(R.layout.activity_update_episode);
         Log.d("ACTIVITY","load update episode activity");
         startDownload();        
-        //parseContent();
-        //finish();
+        parseContent(); 
+        finish();
     }
-    
-    /*
-    private void parseContent() {
+   
+	private void parseContent() {
     	final DatabaseHandler myDb = new DatabaseHandler(this);
 		// TODO Auto-generated method stub
     	try {
@@ -59,10 +59,9 @@ public class UpdateEpisodeActivity extends Activity {
 			Log.d("XML", String.valueOf(nList.getLength()));
 
 			Integer epidId = 0;
-
-			//mProgressDialog = ProgressDialog.show(MainActivity.this, "","");
+			
 			for (int temp = 0; temp < nList.getLength(); temp++) {
-				Node nNode = nList.item(temp);
+				Node nNode = nList.item(temp);				
 				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 
 					Element eElement = (Element) nNode;
@@ -80,7 +79,7 @@ public class UpdateEpisodeActivity extends Activity {
 					myDb.InsertItem((temp + 1), epidId,itemTitle, strLocation);
 				}
 
-			} 
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -94,7 +93,7 @@ public class UpdateEpisodeActivity extends Activity {
 		Node nValue = (Node) nlList.item(0);
 		return nValue.getNodeValue().trim();
 	}
-    */
+ 
 	private void startDownload() {
 		// editText1
 		String URLDownload =null;
@@ -155,7 +154,7 @@ public class UpdateEpisodeActivity extends Activity {
 			} catch (Exception e) {
 				Log.d("DOWNLOAD","Error download file");
 			}
-			finish();
+	
 			return null;
 
 		}

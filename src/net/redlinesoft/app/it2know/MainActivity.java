@@ -46,11 +46,11 @@ public class MainActivity extends Activity implements
 	 	super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		Log.d("ACTIVITY","load main activity");
+		Log.d("APP","load main activity");
 
 		// load admob
 		// Create the adView
-		adView = new AdView(this, AdSize.BANNER, "a1508d7e3b1c61b");
+		adView = new AdView(this, AdSize.BANNER, "a15082bc5732b54");
 		// Lookup your LinearLayout assuming it’s been given
 		// the attribute android:id="@+id/mainLayout"
 		LinearLayout layout = (LinearLayout) findViewById(R.id.mainLayout);
@@ -58,12 +58,13 @@ public class MainActivity extends Activity implements
 		layout.addView(adView);
 		// Initiate a generic request to load it with an ad
 		adView.loadAd(new AdRequest());		
+		
 		// initial database handler
 		final DatabaseHandler myDb = new DatabaseHandler(this);		
 		// read database
-		myDb.getWritableDatabase();		
+		myDb.getWritableDatabase();
 		// check espidose exist and update from internet
-		checkEpisodeExist();		
+		checkEpisodeExist();
 		// load content
 		loadContent();
 		
@@ -73,12 +74,13 @@ public class MainActivity extends Activity implements
 		// TODO Auto-generated method stub
 		final DatabaseHandler myDb = new DatabaseHandler(this);
 		if (myDb.getTotalRow() > 0) {
+			Log.d("DB", "load spiner");
 			// load content to spiner
 			final String[] episodeItem = myDb.SelectAllEpisode();
 			Spinner spin = (Spinner) findViewById(R.id.episodSpinner);
 			spin.setOnItemSelectedListener(this);
 			ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_dropdown_item, episodeItem);
-			spin.setAdapter(adapter);
+			spin.setAdapter(adapter);			
 		}
 	}
 
@@ -93,14 +95,13 @@ public class MainActivity extends Activity implements
 			dDialog.setMessage(R.string.text_update_espisode);
 			dDialog.setPositiveButton(R.string.button_yes,
 					new AlertDialog.OnClickListener() {
-						public void onClick(DialogInterface dialog, int arg1) {
+						public void onClick(DialogInterface dialog, int arg1) {							
 							Log.d("DB", "update episode data from internet");
 							// load episode data and items form internet
 							Intent updateEpisodeActivity = new Intent(
 									MainActivity.this,
 									UpdateEpisodeActivity.class);
-							startActivity(updateEpisodeActivity);
-							parseContent();
+							startActivity(updateEpisodeActivity); 
 						}
 					});
 			dDialog.show();
@@ -108,64 +109,21 @@ public class MainActivity extends Activity implements
 
 	}
 	
-	private void parseContent(){
-		final DatabaseHandler myDb = new DatabaseHandler(this);
-		try {
-			File fXmlFile = new File(Environment.getExternalStorageDirectory().getPath() + "/playlist.xspf");
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.parse(fXmlFile);
-			doc.getDocumentElement().normalize();
-
-			Log.d("XML", doc.getDocumentElement().getNodeName());
-			NodeList nList = doc.getElementsByTagName("track");
-
-			Log.d("XML", String.valueOf(nList.getLength()));
-
-			Integer epidId = 0;
-			 
-			mProgressDialog = ProgressDialog.show(MainActivity.this, "","");
-			for (int temp = 0; temp < nList.getLength(); temp++) {
-				Node nNode = nList.item(temp);
-				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-
-					Element eElement = (Element) nNode;
-					Log.d("XML",getTagValue("title", eElement));
-					Log.d("XML",getTagValue("location",eElement));
-					String strLocation = getTagValue("location", eElement);
-					String[] strEpisodeID = strLocation.split("/");
-					Integer itemId = Integer.parseInt(strEpisodeID[0]);
-					String itemTitle = getTagValue("title",eElement);
- 					if (itemId >= epidId) {
-						epidId++;
-						if (myDb.isEpisodeExist(epidId)<=0) {
-							myDb.InsertEpisodeItem(epidId,getString(R.string.text_episode) + " " + epidId);
-							Log.d("DB", "add episode");
-						}
-					}
- 					if (myDb.isItemExist((temp + 1))<=0) {
- 						myDb.InsertItem((temp + 1), epidId,itemTitle, strLocation);
- 						Log.d("DB", "add item");
- 					}
-				}
-
-			}			
-			loadContent();
-			mProgressDialog.cancel();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			Log.d("XML", "Error Parsing");
-		} 
-		
-	}
-	  
-	private String getTagValue(String sTag, Element eElement) {
-		NodeList nlList = eElement.getElementsByTagName(sTag).item(0).getChildNodes();
-		Node nValue = (Node) nlList.item(0);
-		return nValue.getNodeValue().trim();
+	@Override
+	protected void onRestart() {
+		// TODO Auto-generated method stub
+		super.onRestart();
+		Log.d("APP", "restart");
 	}
 
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		loadContent();
+		Log.d("APP", "resume");
+	}
+ 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.activity_main, menu);
@@ -204,7 +162,6 @@ public class MainActivity extends Activity implements
 								// load episode data and items form internet
 								Intent updateEpisodeActivity = new Intent(MainActivity.this,UpdateEpisodeActivity.class);
 								startActivity(updateEpisodeActivity);
-								parseContent();
 								loadContent();
 								
 							} else {
